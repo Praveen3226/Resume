@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Resume Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        footer {
+  background-color: #ffffff; /* White background */
+  text-align: center;
+  color: #6b7280; /* Tailwind's gray-500 equivalent */
+  font-size: 0.875rem; /* Small text */
+  padding: 1rem 0; /* Vertical padding */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Soft inner shadow */
+  margin-top: auto;
+  font-family: 'Inter', sans-serif;
+}
+
+footer span {
+  font-weight: 700; /* Bold */
+  color: #2563eb;   /* Tailwind's blue-600 */
+}
+
+@media (max-width: 640px) {
+  footer {
+    font-size: 0.8rem;
+    padding: 0.75rem 0;
+  }
+}
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #ecf0f1;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f6fa;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.editor-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.preview-section {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    display: none;
+}
+
+details {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+summary {
+    cursor: pointer;
+    padding: 10px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.add-btn {
+    background: #27ae60;
+    margin-top: 10px;
+}
+
+.preview-content h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+}
+
+.entry {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #e74c3c;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.section-container {
+    display: none;
+}
+
+.section-container.visible {
+    display: block;
+}
+
+.contact-info {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.dates {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+/* List Styles */
+.coursework ul,
+.achievements ul,
+.responsibilities ul {
+    list-style-type: none;
+    padding-left: 20px;
+    margin: 5px 0;
+}
+
+.coursework li::before,
+.achievements li::before,
+.responsibilities li::before {
+    content: "•";
+    margin-right: 8px;
+}
+
+.skills-list {
+    list-style-type: none;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.skills-list li::before {
+    content: "";
+    margin-right: 8px;
+    font-family: 'Segoe UI Symbol';
+}
+
+.certification-entry {
+    margin-bottom: 15px;
+}
+
+.education-entry {
+    margin-bottom: 20px;
+}
+
+.experience-entry {
+    margin-bottom: 20px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> 
+</head>
+
+<body>
+    <nav class="bg-white p-4 shadow-md flex items-center justify-between">
+        <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+          AYLABS
+        </div>
+        <div class="space-x-6">
+            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
+        </div>
+      </nav><br>
+    <div class="container">
+        <!-- Editor Section -->
+        <div class="editor-section">
+             <h1 class="text-4xl font-bold text-center mb-6">Student Resume Builder</h1>
+
+
+            <!-- Contact Information -->
+            <details open>
+                <summary>Contact Information</summary>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn</label>
+                    <input type="url" id="linkedin">
+                </div>
+            </details>
+
+            <!-- Objective -->
+            <details>
+                <summary>Objective</summary>
+                <div class="form-group">
+                    <textarea id="objective" rows="3" placeholder="Brief statement about your career goals and skills"></textarea>
+                </div>
+            </details>
+
+            <!-- Education -->
+            <details>
+                <summary>Education</summary>
+                <div id="education-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" class="degree">
+                        </div>
+                        <div class="form-group">
+                            <label>University</label>
+                            <input type="text" class="university">
+                        </div>
+                        <div class="form-group">
+                            <label>Graduation Year</label>
+                            <input type="text" class="grad-year">
+                        </div>
+                        <div class="form-group">
+                            <label>Relevant Coursework</label>
+                            <input type="text" class="coursework" placeholder="Comma-separated list">
+                        </div>
+                        <div class="form-group">
+                            <label>Achievements</label>
+                            <textarea class="achievements" placeholder="GPA, honors, scholarships"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addEducation()">+ Add Education</button>
+            </details>
+
+            <!-- Experience -->
+            <details>
+                <summary>Experience</summary>
+                <div id="experience-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Position</label>
+                            <input type="text" class="position">
+                        </div>
+                        <div class="form-group">
+                            <label>Organization</label>
+                            <input type="text" class="organization">
+                        </div>
+                        <div class="form-group">
+                            <label>Dates</label>
+                            <input type="text" class="dates">
+                        </div>
+                        <div class="form-group">
+                            <label>Responsibilities</label>
+                            <textarea class="responsibilities" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addExperience()">+ Add Experience</button>
+            </details>
+
+            <!-- Skills -->
+            <details>
+                <summary>Skills</summary>
+                <div class="form-group">
+                    <input type="text" id="technicalSkills" placeholder="Comma-separated technical skills">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="softSkills" placeholder="Comma-separated soft skills">
+                </div>
+            </details>
+
+            <!-- Certifications -->
+            <details>
+                <summary>Certifications</summary>
+                <div id="certifications-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Certification Name</label>
+                            <input type="text" class="cert-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Issuing Organization</label>
+                            <input type="text" class="issuer">
+                        </div>
+                        <div class="form-group">
+                            <label>Year Earned</label>
+                            <input type="text" class="year">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
+            </details>
+
+            <button  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="downloadPDF()">Download PDF</button>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <div class="preview-content">
+                <!-- Contact Information -->
+                <div class="section-container" id="contactSection">
+                    <h1 id="previewName"></h1>
+                    <div id="previewContact" class="contact-info"></div>
+                </div>
+
+                <!-- Objective -->
+                <div class="section-container" id="objectiveSection">
+                    <h2>Objective</h2>
+                    <div id="previewObjective"></div>
+                </div>
+
+                <!-- Education -->
+                <div class="section-container" id="educationSection">
+                    <h2>Education</h2>
+                    <div id="previewEducation"></div>
+                </div>
+
+                <!-- Experience -->
+                <div class="section-container" id="experienceSection">
+                    <h2>Experience</h2>
+                    <div id="previewExperience"></div>
+                </div>
+
+                <!-- Skills -->
+                <div class="section-container" id="skillsSection">
+                    <h2>Skills</h2>
+                    <div class="skills-container" id="previewSkills"></div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="section-container" id="certificationsSection">
+                    <h2>Certifications</h2>
+                    <div id="previewCertifications"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-white text-center text-gray-500 text-sm py-4 shadow-inner mt-auto">
+        Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
+      </footer>
+<script>
+const sections = [
+    {
+        id: 'contactSection',
+        hasContent: () => document.getElementById('fullName').value.trim()
+    },
+    {
+        id: 'objectiveSection',
+        hasContent: () => document.getElementById('objective').value.trim()
+    },
+    {
+        id: 'educationSection',
+        hasContent: () => Array.from(document.querySelectorAll('#education-container .entry'))
+            .some(entry => entry.querySelector('.degree').value.trim())
+    },
+    {
+        id: 'experienceSection',
+        hasContent: () => Array.from(document.querySelectorAll('#experience-container .entry'))
+            .some(entry => entry.querySelector('.position').value.trim())
+    },
+    {
+        id: 'skillsSection',
+        hasContent: () => document.getElementById('technicalSkills').value.trim() || 
+                      document.getElementById('softSkills').value.trim()
+    },
+    {
+        id: 'certificationsSection',
+        hasContent: () => Array.from(document.querySelectorAll('#certifications-container .entry'))
+            .some(entry => entry.querySelector('.cert-name').value.trim())
+    }
+];
+
+// Add event listeners to all inputs
+document.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('input', updatePreview);
+});
+
+function updatePreview() {
+    // Toggle section visibility
+    sections.forEach(section => {
+        const container = document.getElementById(section.id);
+        container.classList.toggle('visible', section.hasContent());
+    });
+
+    // Update contact information
+    document.getElementById('previewName').textContent = 
+        document.getElementById('fullName').value || '[Your Name]';
+    
+    document.getElementById('previewContact').innerHTML = [
+        document.getElementById('email').value,
+        document.getElementById('phone').value,
+        document.getElementById('linkedin').value
+    ].filter(Boolean).map(item => {
+        if(item.startsWith('http')) return `<a href="${item}">LinkedIn</a>`;
+        return item;
+    }).join(' | ');
+
+    // Update objective
+    document.getElementById('previewObjective').textContent = 
+        document.getElementById('objective').value || '[Your career objective]';
+
+    // Update education
+    document.getElementById('previewEducation').innerHTML = 
+        Array.from(document.querySelectorAll('#education-container .entry'))
+        .map(entry => {
+            const degree = entry.querySelector('.degree').value || '[Degree]';
+            const university = entry.querySelector('.university').value || '[University]';
+            const year = entry.querySelector('.grad-year').value;
+            const coursework = entry.querySelector('.coursework').value.split(',').filter(Boolean);
+            const achievements = entry.querySelector('.achievements').value.split('\n').filter(Boolean);
+
+            return `
+                <div class="education-entry">
+                    <h3>${degree} - ${university}</h3>
+                    ${year ? `<p class="dates">${year}</p>` : ''}
+                    ${coursework.length ? `
+                    <div class="coursework">
+                        <strong>Relevant Coursework:</strong>
+                        <ul>${coursework.map(c => `<li>${c.trim()}</li>`).join('')}</ul>
+                    </div>` : ''}
+                    ${achievements.length ? `
+                    <div class="achievements">
+                        <strong>Achievements:</strong>
+                        <ul>${achievements.map(a => `<li>${a.trim()}</li>`).join('')}</ul>
+                    </div>` : ''}
+                </div>`;
+        }).join('');
+
+    // Update experience
+    document.getElementById('previewExperience').innerHTML = 
+        Array.from(document.querySelectorAll('#experience-container .entry'))
+        .map(entry => {
+            const position = entry.querySelector('.position').value || '[Position]';
+            const organization = entry.querySelector('.organization').value || '[Organization]';
+            const dates = entry.querySelector('.dates').value;
+            const responsibilities = entry.querySelector('.responsibilities').value.split('\n').filter(Boolean);
+
+            return `
+                <div class="experience-entry">
+                    <h3>${position} - ${organization}</h3>
+                    ${dates ? `<p class="dates">${dates}</p>` : ''}
+                    ${responsibilities.length ? `
+                    <div class="responsibilities">
+                        <ul>${responsibilities.map(r => `<li>${r.trim()}</li>`).join('')}</ul>
+                    </div>` : ''}
+                </div>`;
+        }).join('');
+
+    // Update skills
+    const technicalSkills = document.getElementById('technicalSkills').value.split(',').filter(Boolean);
+    const softSkills = document.getElementById('softSkills').value.split(',').filter(Boolean);
+    document.getElementById('previewSkills').innerHTML = `
+        <ul class="skills-list">
+            <li><strong>Technical:</strong> ${technicalSkills.length ? technicalSkills.join(', ') : '[List technical skills]'}</li>
+            <li><strong>Soft skills:</strong> ${softSkills.length ? softSkills.join(', ') : '[List soft skills]'}</li>
+        </ul>`;
+
+    // Update certifications
+    document.getElementById('previewCertifications').innerHTML = 
+        Array.from(document.querySelectorAll('#certifications-container .entry'))
+        .map(entry => {
+            const certName = entry.querySelector('.cert-name').value || '[Certification]';
+            const issuer = entry.querySelector('.issuer').value;
+            const year = entry.querySelector('.year').value;
+
+            return `
+                <div class="certification-entry">
+                    <h3>${certName}</h3>
+                    <p>${issuer ? `${issuer}` : ''} ${year ? `• ${year}` : ''}</p>
+                </div>`;
+        }).join('');
+
+    // Show/hide preview section
+    document.querySelector('.preview-section').style.display = 
+        sections.some(s => s.hasContent()) ? 'block' : 'none';
+}
+
+function addEducation() {
+    const container = document.getElementById('education-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'entry';
+    newEntry.innerHTML = `
+        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+        <div class="form-group">
+            <label>Degree</label>
+            <input type="text" class="degree">
+        </div>
+        <div class="form-group">
+            <label>University</label>
+            <input type="text" class="university">
+        </div>
+        <div class="form-group">
+            <label>Graduation Year</label>
+            <input type="text" class="grad-year">
+        </div>
+        <div class="form-group">
+            <label>Relevant Coursework</label>
+            <input type="text" class="coursework">
+        </div>
+        <div class="form-group">
+            <textarea class="achievements" placeholder="Achievements"></textarea>
+        </div>
+    `;
+    container.appendChild(newEntry);
+    addInputListeners(newEntry);
+    updatePreview();
+}
+
+function addExperience() {
+    const container = document.getElementById('experience-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'entry';
+    newEntry.innerHTML = `
+        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+        <div class="form-group">
+            <label>Position</label>
+            <input type="text" class="position">
+        </div>
+        <div class="form-group">
+            <label>Organization</label>
+            <input type="text" class="organization">
+        </div>
+        <div class="form-group">
+            <label>Dates</label>
+            <input type="text" class="dates">
+        </div>
+        <div class="form-group">
+            <textarea class="responsibilities"></textarea>
+        </div>
+    `;
+    container.appendChild(newEntry);
+    addInputListeners(newEntry);
+    updatePreview();
+}
+
+function addCertification() {
+    const container = document.getElementById('certifications-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'entry';
+    newEntry.innerHTML = `
+        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+        <div class="form-group">
+            <label>Certification Name</label>
+            <input type="text" class="cert-name">
+        </div>
+        <div class="form-group">
+            <label>Issuing Organization</label>
+            <input type="text" class="issuer">
+        </div>
+        <div class="form-group">
+            <label>Year Earned</label>
+            <input type="text" class="year">
+        </div>
+    `;
+    container.appendChild(newEntry);
+    addInputListeners(newEntry);
+    updatePreview();
+}
+
+function addInputListeners(entry) {
+    entry.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
+}
+
+function removeEntry(button) {
+    button.closest('.entry').remove();
+    updatePreview();
+}
+
+
+
+function addSection(doc, yPos, title, content) {
+    if (yPos > doc.internal.pageSize.height - 40) {
+        doc.addPage();
+        yPos = 40;
+    }
+    
+    // Add section title with underline
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(44, 62, 80);
+    doc.text(title, 40, yPos);
+    
+    // Add title underline
+    const titleWidth = doc.getTextWidth(title);
+    doc.setDrawColor(44, 62, 80);
+    doc.setLineWidth(0.5);
+    doc.line(40, yPos + 5, 40 + titleWidth, yPos + 5);
+    yPos += 15;
+
+    // Add section content
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(0);
+    
+    const splitContent = doc.splitTextToSize(content, 500);
+    splitContent.forEach(line => {
+        if (yPos > doc.internal.pageSize.height - 40) {
+            doc.addPage();
+            yPos = 40;
+        }
+        doc.text(line, 50, yPos);
+        yPos += 18;
+    });
+    
+    return yPos + 10;
+}
+
+function getFormattedEducation() {
+    return Array.from(document.querySelectorAll('#education-container .entry'))
+        .map(entry => {
+            const degree = entry.querySelector('.degree').value;
+            const university = entry.querySelector('.university').value;
+            const year = entry.querySelector('.grad-year').value;
+            const coursework = entry.querySelector('.coursework').value.split(',').filter(Boolean);
+            const achievements = entry.querySelector('.achievements').value.split('\n').filter(Boolean);
+
+            return [
+                `${degree} | ${university}${year ? ' | ' + year : ''}`,
+                coursework.length ? `Coursework: ${coursework.join(', ')}` : '',
+                achievements.map(a => `• ${a.trim()}`).join('\n')
+            ].filter(Boolean).join('\n');
+        }).join('\n\n');
+}
+
+function getFormattedExperience() {
+    return Array.from(document.querySelectorAll('#experience-container .entry'))
+        .map(entry => {
+            const position = entry.querySelector('.position').value;
+            const organization = entry.querySelector('.organization').value;
+            const dates = entry.querySelector('.dates').value;
+            const responsibilities = entry.querySelector('.responsibilities').value
+                .split('\n')
+                .filter(a => a.trim())
+                .map(a => `• ${a}`);
+
+            return [
+                `${position} | ${organization}${dates ? ' | ' + dates : ''}`,
+                ...responsibilities
+            ].join('\n');
+        }).join('\n\n');
+}
+
+function getFormattedSkills() {
+    const technical = document.getElementById('technicalSkills').value.split(',').filter(Boolean);
+    const soft = document.getElementById('softSkills').value.split(',').filter(Boolean);
+    
+    return [
+        'Technical Skills: ' + (technical.length ? technical.join(', ') : '[List technical skills]'),
+        'Soft Skills: ' + (soft.length ? soft.join(', ') : '[List soft skills]')
+    ].join('\n');
+}
+
+function getFormattedCertifications() {
+    return Array.from(document.querySelectorAll('#certifications-container .entry'))
+        .map(entry => {
+            const certName = entry.querySelector('.cert-name').value;
+            const issuer = entry.querySelector('.issuer').value;
+            const year = entry.querySelector('.year').value;
+
+            return `${certName}${issuer ? ' | ' + issuer : ''}${year ? ' | ' + year : ''}`;
+        }).join('\n');
+}
+
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'letter');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Set default styles
+    doc.setFont('helvetica');
+    doc.setFontSize(12);
+    let yPosition = 60;
+
+    // Add Centered Name
+    const name = document.getElementById('fullName').value || 'Your Name';
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text(name, pageWidth/2, yPosition, { align: 'center' });
+    yPosition += 30;
+
+    // Add Contact Information
+    const contactInfo = [
+        document.getElementById('email').value,
+        document.getElementById('phone').value,
+        document.getElementById('linkedin').value
+    ].filter(Boolean).map(item => {
+        return item.startsWith('http') ? 'LinkedIn' : item;
+    }).join(' | ');
+
+    if (contactInfo) {
+        doc.setFontSize(12);
+        doc.text(contactInfo, pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 20;
+    }
+
+    // Add space before first section
+    yPosition += 10;
+    
+    // Define sections
+    const sections = [
+        { 
+            title: 'Objective',
+            content: document.getElementById('objective').value,
+            condition: () => document.getElementById('objective').value.trim()
+        },
+        {
+            title: 'Education',
+            content: getFormattedEducation(),
+            condition: () => Array.from(document.querySelectorAll('#education-container .entry'))
+                            .some(entry => entry.querySelector('.degree').value.trim())
+        },
+        {
+            title: 'Experience',
+            content: getFormattedExperience(),
+            condition: () => Array.from(document.querySelectorAll('#experience-container .entry'))
+                            .some(entry => entry.querySelector('.position').value.trim())
+        },
+        {
+            title: 'Skills',
+            content: getFormattedSkills(),
+            condition: () => document.getElementById('technicalSkills').value.trim() || 
+                          document.getElementById('softSkills').value.trim()
+        },
+        {
+            title: 'Certifications',
+            content: getFormattedCertifications(),
+            condition: () => Array.from(document.querySelectorAll('#certifications-container .entry'))
+                            .some(entry => entry.querySelector('.cert-name').value.trim())
+        }
+    ];
+
+    // Filter active sections
+    const activeSections = sections.filter(section => section.condition());
+
+    // Add sections with dividers
+    activeSections.forEach((section, index) => {
+        yPosition = addSection(doc, yPosition, section.title, section.content);
+        
+        // Add divider if not last section
+        if (index < activeSections.length - 1) {
+            doc.setDrawColor(44, 62, 80);
+            doc.setLineWidth(0.3);
+            const margin = pageWidth * 0.1;
+            const dividerY = yPosition + 10;
+            doc.line(margin, dividerY, pageWidth - margin, dividerY);
+            yPosition = dividerY + 20;
+        }
+    });
+
+    doc.save('student-resume.pdf');
+}
+
+// Initialize preview when page loads
+document.addEventListener('DOMContentLoaded', updatePreview);
+</script>
+
+
+ </body>  
+ </html>

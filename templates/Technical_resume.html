@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Technical Resume Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+         :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f6fa;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .editor-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        details {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        summary {
+            cursor: pointer;
+            padding: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+           
+        .add-btn {
+            background: #27ae60;
+            margin-top: 10px;
+        }
+        
+        .preview-content h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+        
+        .tech-skills-category {
+            margin-bottom: 15px;
+        }
+        
+        .tech-skills-category h3 {
+            margin: 10px 0 5px;
+            color: var(--primary-color);
+            font-size: 1em;
+        }
+
+	 .entry {
+            position: relative;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .section-container {
+            display: none;
+        }
+        
+        .section-container.visible {
+            display: block;
+        }
+        
+        .preview-section h2 {
+            margin-top: 20px;
+        }
+        
+        .skill-badge {
+            display: inline-block;
+            background: var(--secondary-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 2px 5px;
+            font-size: 0.9em;
+        }
+        
+        .preview-section ul {
+            padding-left: 20px;
+        }
+        
+        .preview-section li {
+            margin-bottom: 5px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body class="min-h-screen flex flex-col bg-[#f5f6fa]">
+    <nav class="bg-white p-4 shadow-md flex items-center justify-between">
+        <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+          AYLABS
+        </div>
+        <div class="space-x-6">
+            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
+        </div>
+      </nav><br>
+    <div class="container">
+        <!-- Editor Section -->
+        <div class="editor-section">
+       <h1 class="text-4xl font-bold text-center mb-6">Technical Resume Builder</h1>
+
+
+            <!-- Contact Information -->
+            <details open>
+                <summary>Contact Information</summary>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn</label>
+                    <input type="url" id="linkedin">
+                </div>
+                <div class="form-group">
+                    <label>GitHub/Portfolio</label>
+                    <input type="url" id="portfolio">
+                </div>
+            </details>
+
+            <!-- Technical Summary -->
+            <details>
+                <summary>Technical Summary</summary>
+                <div class="form-group">
+                    <textarea id="summary" rows="4" placeholder="Example: Full-stack developer with 5 years experience..."></textarea>
+                </div>
+            </details>
+
+            <!-- Technical Skills -->
+            <details>
+                <summary>Technical Skills</summary>
+                <div class="tech-skills-category">
+                    <h3>Programming Languages</h3>
+                    <div class="form-group">
+                        <input type="text" id="prog-langs" placeholder="Comma-separated list (e.g., JavaScript, Python)">
+                    </div>
+                </div>
+                <div class="tech-skills-category">
+                    <h3>Frameworks & Libraries</h3>
+                    <div class="form-group">
+                        <input type="text" id="frameworks" placeholder="Comma-separated list (e.g., React, Django)">
+                    </div>
+                </div>
+                <div class="tech-skills-category">
+                    <h3>Tools & Technologies</h3>
+                    <div class="form-group">
+                        <input type="text" id="tools" placeholder="Comma-separated list (e.g., Docker, AWS)">
+                    </div>
+                </div>
+            </details>
+
+            <!-- Experience -->
+            <details>
+                <summary>Experience</summary>
+                <div id="work-experience-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Job Title</label>
+                            <input type="text" class="job-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Company</label>
+                            <input type="text" class="company">
+                        </div>
+                        <div class="form-group">
+                            <label>Dates</label>
+                            <input type="text" class="work-dates">
+                        </div>
+                        <div class="form-group">
+                            <label>Achievements</label>
+                            <textarea class="achievements" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addWorkExperience()">+ Add Experience</button>
+            </details>
+
+            <!-- Education -->
+            <details>
+                <summary>Education</summary>
+                <div id="education-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" class="degree">
+                        </div>
+                        <div class="form-group">
+                            <label>University</label>
+                            <input type="text" class="university">
+                        </div>
+                        <div class="form-group">
+                            <label>Graduation Year</label>
+                            <input type="text" class="grad-year">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addEducation()">+ Add Education</button>
+            </details>
+
+            <!-- Projects -->
+            <details>
+                <summary>Projects</summary>
+                <div id="projects-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Project Name</label>
+                            <input type="text" class="project-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Description & Technologies</label>
+                            <textarea class="project-desc" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addProject()">+ Add Project</button>
+            </details>
+
+            <!-- Certifications -->
+            <details>
+                <summary>Certifications</summary>
+                <div id="certifications-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Certification Name</label>
+                            <input type="text" class="cert-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Issuing Organization</label>
+                            <input type="text" class="cert-org">
+                        </div>
+                        <div class="form-group">
+                            <label>Year Earned</label>
+                            <input type="text" class="cert-year">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
+            </details>
+
+            <button   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="downloadPDF()">Download PDF</button>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <div class="preview-content">
+                <!-- Contact Information -->
+                <div class="section-container" id="contactSection">
+                    <h1 id="previewName"></h1>
+                    <div id="previewContact" class="contact-info"></div>
+                </div>
+
+                <!-- Technical Summary -->
+                <div class="section-container" id="summarySection">
+                    <h2>Technical Summary</h2>
+                    <div id="previewSummary"></div>
+                </div>
+
+                <!-- Technical Skills -->
+                <div class="section-container" id="techSkillsSection">
+                    <h2>Technical Skills</h2>
+                    <div class="tech-skills-category">
+                        <h3>Programming Languages</h3>
+                        <div id="previewProgLangs" class="skills"></div>
+                    </div>
+                    <div class="tech-skills-category">
+                        <h3>Frameworks & Libraries</h3>
+                        <div id="previewFrameworks" class="skills"></div>
+                    </div>
+                    <div class="tech-skills-category">
+                        <h3>Tools & Technologies</h3>
+                        <div id="previewTools" class="skills"></div>
+                    </div>
+                </div>
+
+                <!-- Work Experience -->
+                <div class="section-container" id="workSection">
+                    <h2>Work Experience</h2>
+                    <div id="previewWorkExperience"></div>
+                </div>
+
+                <!-- Education -->
+                <div class="section-container" id="educationSection">
+                    <h2>Education</h2>
+                    <div id="previewEducation"></div>
+                </div>
+                <!-- Projects -->
+                <div class="section-container" id="projectsSection">
+                    <h2>Projects</h2>
+                    <div id="previewProjects"></div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="section-container" id="certsSection">
+                    <h2>Certifications</h2>
+                    <div id="previewCertifications"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-white text-center text-gray-500 text-sm py-4 shadow-inner mt-auto">
+        Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
+      </footer>
+   
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // Section configuration
+        const sections = [{
+            id: 'contactSection',
+            hasContent: () =>
+                document.getElementById('fullName').value.trim() ||
+                document.getElementById('email').value.trim() ||
+                document.getElementById('phone').value.trim()
+        }, {
+            id: 'summarySection',
+            hasContent: () =>
+                document.getElementById('summary').value.trim()
+        }, {
+            id: 'techSkillsSection',
+            hasContent: () =>
+                document.getElementById('prog-langs').value.trim() ||
+                document.getElementById('frameworks').value.trim() ||
+                document.getElementById('tools').value.trim()
+        }, {
+            id: 'workSection',
+            hasContent: () =>
+                Array.from(document.querySelectorAll('#work-experience-container .entry'))
+                .some(entry => entry.querySelector('.job-title').value.trim())
+        }, {
+            id: 'projectsSection',
+            hasContent: () =>
+                Array.from(document.querySelectorAll('#projects-container .entry'))
+                .some(entry => entry.querySelector('.project-name').value.trim())
+        }, {
+            id: 'educationSection',
+            hasContent: () =>
+                Array.from(document.querySelectorAll('#education-container .entry'))
+                .some(entry => entry.querySelector('.degree').value.trim())
+        }, {
+            id: 'certsSection',
+            hasContent: () =>
+                Array.from(document.querySelectorAll('#certifications-container .entry'))
+                .some(entry => entry.querySelector('.cert-name').value.trim())
+        }];
+
+        // Initialize event listeners
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        function updatePreview() {
+            sections.forEach(section => {
+                const container = document.getElementById(section.id);
+                const hasContent = section.hasContent();
+                container.classList.toggle('visible', hasContent);
+            });
+
+            // Update preview content
+            document.getElementById('previewName').textContent = document.getElementById('fullName').value || '[Your Name]';
+            document.getElementById('previewContact').textContent = [
+                document.getElementById('email').value,
+                document.getElementById('phone').value,
+                document.getElementById('linkedin').value,
+                document.getElementById('portfolio').value
+            ].filter(Boolean).join(' | ');
+
+            document.getElementById('previewSummary').textContent = document.getElementById('summary').value;
+
+            // Technical Skills
+            document.getElementById('previewProgLangs').innerHTML = document.getElementById('prog-langs').value
+                .split(',')
+                .map(skill => skill.trim())
+                .filter(Boolean)
+                .map(skill => `<span class="skill-badge">${skill}</span>`)
+                .join('');
+
+            document.getElementById('previewFrameworks').innerHTML = document.getElementById('frameworks').value
+                .split(',')
+                .map(skill => skill.trim())
+                .filter(Boolean)
+                .map(skill => `<span class="skill-badge">${skill}</span>`)
+                .join('');
+
+            document.getElementById('previewTools').innerHTML = document.getElementById('tools').value
+                .split(',')
+                .map(skill => skill.trim())
+                .filter(Boolean)
+                .map(skill => `<span class="skill-badge">${skill}</span>`)
+                .join('');
+
+            // Work Experience
+            document.getElementById('previewWorkExperience').innerHTML = Array.from(
+                    document.querySelectorAll('#work-experience-container .entry'))
+                .map(entry => {
+                        const title = entry.querySelector('.job-title').value;
+                        const company = entry.querySelector('.company').value;
+                        const dates = entry.querySelector('.work-dates').value;
+                        const achievements = entry.querySelector('.achievements').value
+                            .split('\n')
+                            .filter(a => a.trim());
+
+                        return `
+                        <div class="experience">
+                            <h3>${title || 'Job Title'}</h3>
+                            <p>${company || ''} ${dates ? '| ' + dates : ''}</p>
+                            ${achievements.length ? `<ul>${achievements.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+                        </div>`;
+                }).join('');
+
+            // Education
+            document.getElementById('previewEducation').innerHTML = Array.from(
+                document.querySelectorAll('#education-container .entry'))
+                .map(entry => {
+                    const degree = entry.querySelector('.degree').value;
+                    const university = entry.querySelector('.university').value;
+                    const year = entry.querySelector('.grad-year').value;
+
+                    return `
+                        <div class="education">
+                            <h3>${degree || 'Degree'}</h3>
+                            <p>${university || ''} ${year ? '| ' + year : ''}</p>
+                        </div>`;
+                }).join('');
+
+            // Projects
+            document.getElementById('previewProjects').innerHTML = Array.from(
+                document.querySelectorAll('#projects-container .entry'))
+                .map(entry => {
+                    const name = entry.querySelector('.project-name').value;
+                    const desc = entry.querySelector('.project-desc').value
+                        .split('\n')
+                        .filter(a => a.trim());
+
+                    return `
+                        <div class="project">
+                            <h3>${name || 'Project Name'}</h3>
+                            ${desc.length ? `<ul>${desc.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+                        </div>`;
+                }).join('');
+
+            // Certifications
+            document.getElementById('previewCertifications').innerHTML = Array.from(
+                document.querySelectorAll('#certifications-container .entry'))
+                .map(entry => {
+                    const name = entry.querySelector('.cert-name').value;
+                    const org = entry.querySelector('.cert-org').value;
+                    const year = entry.querySelector('.cert-year').value;
+
+                    return `
+                        <div class="certification">
+                            <h3>${name || 'Certification'}</h3>
+                            <p>${org || ''} ${year ? '| ' + year : ''}</p>
+                        </div>`;
+                }).join('');
+
+            // Toggle preview visibility
+            document.querySelector('.preview-section').style.display = 
+        sections.some(s => s.hasContent()) ? 'block' : 'none';
+}
+
+             // Entry Management Functions
+             function addWorkExperience() {
+            const container = document.getElementById('work-experience-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'entry';
+            newEntry.innerHTML = `
+                <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" class="job-title">
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" class="company">
+                </div>
+                <div class="form-group">
+                    <label>Dates</label>
+                    <input type="text" class="work-dates">
+                </div>
+                <div class="form-group">
+                    <label>Achievements</label>
+                    <textarea class="achievements" rows="3"></textarea>
+                </div>
+            `;
+            container.appendChild(newEntry);
+            addInputListeners(newEntry);
+            updatePreview();
+        }
+
+        function addProject() {
+            const container = document.getElementById('projects-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'entry';
+            newEntry.innerHTML = `
+                <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" class="project-name">
+                </div>
+                <div class="form-group">
+                    <label>Description & Technologies</label>
+                    <textarea class="project-desc" rows="3"></textarea>
+                </div>
+            `;
+            container.appendChild(newEntry);
+            addInputListeners(newEntry);
+            updatePreview();
+        }
+
+        function addEducation() {
+            const container = document.getElementById('education-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'entry';
+            newEntry.innerHTML = `
+                <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                <div class="form-group">
+                    <label>Degree</label>
+                    <input type="text" class="degree">
+                </div>
+                <div class="form-group">
+                    <label>University</label>
+                    <input type="text" class="university">
+                </div>
+                <div class="form-group">
+                    <label>Graduation Year</label>
+                    <input type="text" class="grad-year">
+                </div>
+            `;
+            container.appendChild(newEntry);
+            addInputListeners(newEntry);
+            updatePreview();
+        }
+
+        function addCertification() {
+            const container = document.getElementById('certifications-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'entry';
+            newEntry.innerHTML = `
+                <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                <div class="form-group">
+                    <label>Certification Name</label>
+                    <input type="text" class="cert-name">
+                </div>
+                <div class="form-group">
+                    <label>Issuing Organization</label>
+                    <input type="text" class="cert-org">
+                </div>
+                <div class="form-group">
+                    <label>Year Earned</label>
+                    <input type="text" class="cert-year">
+                </div>
+            `;
+            container.appendChild(newEntry);
+            addInputListeners(newEntry);
+            updatePreview();
+        }
+
+        function addInputListeners(entry) {
+            entry.querySelectorAll('input, textarea').forEach(input => {
+                input.addEventListener('input', updatePreview);
+            });
+        }
+
+        function removeEntry(button) {
+            button.closest('.entry').remove();
+            updatePreview();
+        }
+
+        // Initialize preview when page loads
+        document.addEventListener('DOMContentLoaded', updatePreview);
+
+        // Add these helper functions ABOVE the downloadPDF function
+function getFormattedSkills() {
+    return [
+        'Programming Languages: ' + document.getElementById('prog-langs').value,
+        'Frameworks & Libraries: ' + document.getElementById('frameworks').value,
+        'Tools & Technologies: ' + document.getElementById('tools').value
+    ].filter(s => s.length > 18).join('\n');
+}
+
+function getFormattedExperience() {
+    return Array.from(document.querySelectorAll('#work-experience-container .entry'))
+        .map(entry => {
+            const title = entry.querySelector('.job-title').value;
+            const company = entry.querySelector('.company').value;
+            const dates = entry.querySelector('.work-dates').value;
+            const achievements = entry.querySelector('.achievements').value
+                .split('\n')
+                .filter(a => a.trim())
+                .map(a => `• ${a}`)
+                .join('\n');
+
+            return [
+                `${title} | ${company}${dates ? ' | ' + dates : ''}`,
+                achievements
+            ].join('\n');
+        }).join('\n\n');
+}
+
+function getFormattedEducation() {
+    return Array.from(document.querySelectorAll('#education-container .entry'))
+        .map(entry => {
+            const degree = entry.querySelector('.degree').value;
+            const university = entry.querySelector('.university').value;
+            const year = entry.querySelector('.grad-year').value;
+            return `${degree} | ${university}${year ? ' | ' + year : ''}`;
+        }).join('\n');
+}
+
+function getFormattedProjects() {
+    return Array.from(document.querySelectorAll('#projects-container .entry'))
+        .map(entry => {
+            const name = entry.querySelector('.project-name').value;
+            const desc = entry.querySelector('.project-desc').value
+                .split('\n')
+                .filter(a => a.trim())
+                .map(a => `• ${a}`)
+                .join('\n');
+            return `${name}\n${desc}`;
+        }).join('\n\n');
+}
+
+function getFormattedCertifications() {
+    return Array.from(document.querySelectorAll('#certifications-container .entry'))
+        .map(entry => {
+            const name = entry.querySelector('.cert-name').value;
+            const org = entry.querySelector('.cert-org').value;
+            const year = entry.querySelector('.cert-year').value;
+            return `${name} | ${org}${year ? ' | ' + year : ''}`;
+        }).join('\n');
+}
+
+// Add the addSection function
+function addSection(doc, yPos, title, content) {
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    
+    if (yPos > pageHeight - 40) {
+        doc.addPage();
+        yPos = 40;
+    }
+    
+    // Add section title with underline
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(44, 62, 80);
+    doc.text(title, 40, yPos);
+    
+    // Add title underline
+    const titleWidth = doc.getTextWidth(title);
+    doc.setDrawColor(44, 62, 80);
+    doc.setLineWidth(0.5);
+    doc.line(40, yPos + 5, 40 + titleWidth, yPos + 5);
+    yPos += 15;
+
+    // Add section content
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(0);
+    
+    const splitContent = doc.splitTextToSize(content, pageWidth - 80);
+    splitContent.forEach(line => {
+        if (yPos > pageHeight - 40) {
+            doc.addPage();
+            yPos = 40;
+        }
+        doc.text(line, 50, yPos);
+        yPos += 18;
+    });
+    
+    return yPos + 10;
+}
+
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'letter');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            
+            // Set default styles
+            doc.setFont('helvetica');
+            doc.setFontSize(12);
+            let yPosition = 60;
+        
+            // Add Centered Name
+            const name = document.getElementById('fullName').value || 'Your Name';
+            doc.setFontSize(24);
+            doc.setFont(undefined, 'bold');
+            doc.text(name, pageWidth/2, yPosition, { align: 'center' });
+            yPosition += 30;  // Reduced from 40
+        
+            // Add Contact Information
+            const contactInfo = [
+                document.getElementById('email').value,
+                document.getElementById('phone').value,
+                document.getElementById('linkedin').value,
+                document.getElementById('portfolio').value
+            ].filter(Boolean).join(' | ');
+        
+            if (contactInfo) {
+                doc.setFontSize(12);
+                doc.text(contactInfo, pageWidth/2, yPosition, { align: 'center' });
+                yPosition += 20;  // Reduced from 30
+            }
+        
+            // Add space before first section
+            yPosition += 10;  // Reduced from 20
+            
+            // Define sections
+            const sections = [
+                { 
+                    title: 'Technical Summary', 
+                    content: document.getElementById('summary').value,
+                    condition: () => document.getElementById('summary').value.trim()
+                },
+                {
+                    title: 'Technical Skills',
+                    content: getFormattedSkills(),
+                    condition: () => document.getElementById('prog-langs').value.trim() ||
+                                  document.getElementById('frameworks').value.trim() ||
+                                  document.getElementById('tools').value.trim()
+                },
+                {
+                    title: 'Work Experience',
+                    content: getFormattedExperience(),
+                    condition: () => Array.from(document.querySelectorAll('#work-experience-container .entry'))
+                                    .some(entry => entry.querySelector('.job-title').value.trim())
+                },
+                {
+                    title: 'Education',
+                    content: getFormattedEducation(),
+                    condition: () => Array.from(document.querySelectorAll('#education-container .entry'))
+                                    .some(entry => entry.querySelector('.degree').value.trim())
+                },
+                {
+                    title: 'Projects',
+                    content: getFormattedProjects(),
+                    condition: () => Array.from(document.querySelectorAll('#projects-container .entry'))
+                                    .some(entry => entry.querySelector('.project-name').value.trim())
+                },
+                {
+                    title: 'Certifications',
+                    content: getFormattedCertifications(),
+                    condition: () => Array.from(document.querySelectorAll('#certifications-container .entry'))
+                                    .some(entry => entry.querySelector('.cert-name').value.trim())
+                }
+            ];
+        
+            // Filter active sections
+            const activeSections = sections.filter(section => section.condition());
+        
+            // Add sections with compact dividers
+            activeSections.forEach((section, index) => {
+                yPosition = addSection(doc, yPosition, section.title, section.content);
+                
+                // Add divider if not last section
+                if (index < activeSections.length - 1) {
+                    doc.setDrawColor(44, 62, 80);
+                    doc.setLineWidth(0.3);
+                    const margin = pageWidth * 0.1;
+                    const dividerY = yPosition + 10;  // Reduced from +20
+                    doc.line(margin, dividerY, pageWidth - margin, dividerY);
+                    yPosition = dividerY + 20;  // Reduced from +40
+                }
+            });
+        
+            doc.save('technical-resume.pdf');
+        }
+    </script>
+</body>
+
+</html>

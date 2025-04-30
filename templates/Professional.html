@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Resume Builder with Dropdown Sections</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+         :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f6fa;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        x
+        .editor-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        details {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        
+        summary {
+            cursor: pointer;
+            padding: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        .preview-content {
+            color: #333;
+        }
+        
+        .preview-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+        
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .skill-badge {
+            background: var(--secondary-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        
+        .entry {
+            position: relative;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .add-btn {
+            background: #27ae60;
+            margin-top: 10px;
+        }
+        
+        .preview-section {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+        }
+        
+        .preview-section {
+            display: none;
+            /* Hide preview section initially */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body class="min-h-screen flex flex-col bg-[#f5f6fa]">
+    <nav class="bg-white p-4 shadow-md flex items-center justify-between">
+        <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+          AYLABS
+        </div>
+        <div class="space-x-6">
+            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
+        </div>
+      </nav><br>
+
+    <div class="container">
+        <!-- Editor Section -->
+        <div class="editor-section">
+            <h1  class="text-4xl font-bold text-center mb-6">Professional Resume Builder</h1>
+
+            <!-- Contact Information -->
+            <details open>
+                <summary>Contact Information</summary>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn</label>
+                    <input type="url" id="linkedin">
+                </div>
+                <div class="form-group">
+                    <label>Portfolio</label>
+                    <input type="url" id="portfolio">
+                </div>
+            </details>
+
+            <!-- Professional Summary -->
+            <details>
+                <summary>Professional Summary</summary>
+                <div class="form-group">
+                    <textarea id="summary" rows="4"></textarea>
+                </div>
+            </details>
+
+            <!-- Work Experience -->
+            <details>
+                <summary>Work Experience</summary>
+                <div id="work-experience-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Job Title</label>
+                            <input type="text" class="job-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Company</label>
+                            <input type="text" class="company">
+                        </div>
+                        <div class="form-group">
+                            <label>Dates (e.g., Jan 2020 - Present)</label>
+                            <input type="text" class="work-dates">
+                        </div>
+                        <div class="form-group">
+                            <label>Achievements (one per line)</label>
+                            <textarea class="achievements" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addWorkExperience()">+ Add Experience</button>
+            </details>
+
+            <!-- Education Section -->
+            <details>
+                <summary>Education</summary>
+                <div id="education-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" class="degree">
+                        </div>
+                        <div class="form-group">
+                            <label>University</label>
+                            <input type="text" class="university">
+                        </div>
+                        <div class="form-group">
+                            <label>Graduation Year</label>
+                            <input type="text" class="grad-year">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addEducation()">+ Add Education</button>
+            </details>
+
+            <!-- Skills Section -->
+            <details>
+                <summary>Skills</summary>
+                <div id="skills-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Skill</label>
+                            <input type="text" class="skill-input">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addSkill()">+ Add Skill</button>
+            </details>
+
+            <!-- Certifications Section -->
+            <details>
+                <summary>Certifications</summary>
+                <div id="certifications-container">
+                    <div class="entry">
+                        <button class="delete-btn" onclick="removeEntry(this)">×</button>
+                        <div class="form-group">
+                            <label>Certification Name</label>
+                            <input type="text" class="cert-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Issuing Organization</label>
+                            <input type="text" class="cert-org">
+                        </div>
+                        <div class="form-group">
+                            <label>Year Earned</label>
+                            <input type="text" class="cert-year">
+                        </div>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
+            </details>
+            <div id="termsPopup" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+                <div style="background:white; padding:20px; max-width:500px; margin:auto; border-radius:10px; text-align:left; font-family:Arial, sans-serif;">
+                    <h2 style="text-align:center;">Terms & Conditions - AYLABS</h2>
+                    <p style="font-size:14px; line-height:1.6; color:#333;">
+                        Thank you for choosing <strong>AYLABS</strong>. Before proceeding, please carefully review the following terms:
+                    </p>
+                    <ul style="font-size:14px; line-height:1.8; color:#333; margin-top:15px;">
+                        <li>All information you submit will be securely transmitted and stored using industry-standard encryption methods.</li>
+                        <li><strong>AYLABS</strong> will use your provided data strictly for the intended purpose of generating your executive profile document.</li>
+                        <li>Collected data may be retained internally by <strong>AYLABS</strong> to improve, enhance, and personalize future products and services.</li>
+                        <li>Your personal information will <strong>never</strong> be sold, rented, disclosed, or shared with any third parties without your explicit consent.</li>
+                        <li><strong>AYLABS</strong> complies with global data protection laws, including GDPR, ensuring your privacy rights are respected at all times.</li>
+                        <li>All stored data is protected against unauthorized access, alteration, disclosure, or destruction through rigorous security measures.</li>
+                        <li>At any time, you may request to delete or review your stored data by contacting our Data Protection Officer (DPO) via our official channels.</li>
+                        <li>By accepting, you consent to the collection, secure processing, and limited use of your information in accordance with <strong>AYLABS</strong>'s Privacy Policy and Terms of Service.</li>
+                    </ul>
+
+                    <p style="margin-top:15px; font-size:13px; color:#555;">By clicking "Accept," you acknowledge and agree to these terms provided by <strong>AYLABS</strong>.</p>
+                    <div style="text-align:center; margin-top:20px;">
+                        <button onclick="acceptTerms()" style="margin-right:10px; padding:8px 16px;">Accept</button>
+                        <button onclick="declineTerms()" style="padding:8px 16px;">Decline</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="showTermsPopup()">Submit & Download PDF</button>
+        </div>
+
+
+        <!-- Preview Section -->
+        <div class="preview-section">
+            <div class="preview-content">
+                <h1 id="previewName"></h1>
+                <div id="previewContact" class="contact-info">
+
+                </div>
+
+                <h2 id="previewSummaryHeading">Professional Summary</h2>
+                <div id="previewSummary" class="summary">
+
+                </div>
+
+                <h2 id="previewWorkHeading">Work Experience</h2>
+                <div id="previewWorkExperience"></div>
+
+                <h2 id="previewEducationHeading">Education</h2>
+                <div id="previewEducation"></div>
+
+                <h2 id="previewSkillsHeading">Skills</h2>
+                <div class="skills" id="previewSkills"></div>
+
+                <h2 id="previewCertsHeading">Certifications</h2>
+                <div id="previewCertifications"></div>
+            </div>
+
+        </div>
+    </div>
+    <footer class="bg-white text-center text-gray-500 text-sm py-4 shadow-inner mt-auto">
+        Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
+      </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+        <script>
+            function showTermsPopup() {
+        document.getElementById('termsPopup').style.display = 'flex';
+    }
+    
+    function acceptTerms() {
+        document.getElementById('termsPopup').style.display = 'none';
+        submitAndDownload(); // Proceed!
+    }
+    
+    function declineTerms() {
+        document.getElementById('termsPopup').style.display = 'none';
+        alert("You must accept the terms to proceed.");
+    }
+        function collectFormData() {
+    // Collect all work experience entries (even if blank)
+    const workExperienceEntries = Array.from(document.querySelectorAll('#work-experience-container .entry')).map(entry => ({
+        jobTitle: entry.querySelector('.job-title').value || '',  // Allow blank jobTitle
+        company: entry.querySelector('.company').value || '',      // Allow blank company
+        dates: entry.querySelector('.work-dates').value || '',     // Allow blank dates
+        achievements: entry.querySelector('.achievements').value || ''  // Allow blank achievements
+    }));
+
+    // Ensure work experience field is included even if empty
+    if (workExperienceEntries.length === 0) {
+        workExperienceEntries.push({ jobTitle: '', company: '', dates: '', achievements: '' }); // Add empty entry if no data
+    }
+
+    // Collect form data from other sections
+    return {
+        fullName: document.getElementById("fullName").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        linkedin: document.getElementById("linkedin").value,
+        portfolio: document.getElementById("portfolio").value,
+        summary: document.getElementById("summary").value,
+        work_experience: workExperienceEntries,  // This will hold your work experience data
+        education: Array.from(document.querySelectorAll('#education-container .entry')).map(entry => ({
+            degree: entry.querySelector('.degree').value || '', // Allow blank degree
+            institution: entry.querySelector('.university').value || '', // Allow blank institution
+            year: entry.querySelector('.grad-year').value || '' // Allow blank year
+        })),
+        skills: Array.from(document.querySelectorAll('#skills-container .entry')).map(entry => ({
+            skill: entry.querySelector('.skill-input').value || '' // Allow blank skill
+        })),
+        certifications: Array.from(document.querySelectorAll('#certifications-container .entry')).map(entry => ({
+            certName: entry.querySelector('.cert-name').value || '', // Allow blank certName
+            certOrg: entry.querySelector('.cert-org').value || '',   // Allow blank certOrg
+            certYear: entry.querySelector('.cert-year').value || ''  // Allow blank certYear
+        }))
+    };
+}
+    async function submitAndDownload() {
+        const data = collectFormData();
+    
+        try {
+            // First, submit the profile
+            const response = await fetch('/submit-resume', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+    
+            const res = await response.json();
+    
+            if (response.ok) {
+                alert("Profile submitted successfully! Now downloading PDF...");
+    
+                // Then, download the PDF
+                await downloadPDF();
+            } else {
+                console.error(res.message || "Unknown error");
+                alert("Submission failed: " + (res.message || "Unknown error"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("An error occurred during submission.");
+        }
+    }
+   // Helper functions
+function getFormattedWorkExperience() {
+    return Array.from(document.querySelectorAll('#work-experience-container .entry'))
+        .map(entry => {
+            const title = entry.querySelector('.job-title').value;
+            const company = entry.querySelector('.company').value;
+            const dates = entry.querySelector('.work-dates').value;
+            const achievements = entry.querySelector('.achievements').value
+                .split('\n')
+                .filter(a => a.trim())
+                .map(a => `• ${a}`);
+
+            return [
+                `${title}${company ? ' | ' + company : ''}${dates ? ' | ' + dates : ''}`,
+                ...achievements
+            ].join('\n');
+        }).join('\n\n');
+}
+
+function getFormattedEducation() {
+    return Array.from(document.querySelectorAll('#education-container .entry'))
+        .map(entry => {
+            const degree = entry.querySelector('.degree').value;
+            const university = entry.querySelector('.university').value;
+            const year = entry.querySelector('.grad-year').value;
+            return `${degree}${university ? ' | ' + university : ''}${year ? ' | ' + year : ''}`;
+        }).join('\n');
+}
+
+function getFormattedSkills() {
+    const skills = Array.from(document.querySelectorAll('#skills-container .skill-input'))
+        .map(input => input.value.trim())
+        .filter(Boolean);
+    return skills.length ? skills.map(s => `• ${s}`).join('\n') : '';
+}
+
+function getFormattedCertifications() {
+    return Array.from(document.querySelectorAll('#certifications-container .entry'))
+        .map(entry => {
+            const name = entry.querySelector('.cert-name').value;
+            const org = entry.querySelector('.cert-org').value;
+            const year = entry.querySelector('.cert-year').value;
+            return `${name}${org ? ' | ' + org : ''}${year ? ' | ' + year : ''}`;
+        }).join('\n');
+}
+
+function addSection(doc, yPos, title, content) {
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    
+    if (yPos > pageHeight - 40) {
+        doc.addPage();
+        yPos = 40;
+    }
+    
+    // Add section title with underline
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(44, 62, 80);
+    doc.text(title, 40, yPos);
+    
+    // Add title underline
+    const titleWidth = doc.getTextWidth(title);
+    doc.setDrawColor(44, 62, 80);
+    doc.setLineWidth(0.5);
+    doc.line(40, yPos + 5, 40 + titleWidth, yPos + 5);
+    yPos += 15;
+
+    // Add section content
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(0);
+    
+    const splitContent = doc.splitTextToSize(content, pageWidth - 80);
+    splitContent.forEach(line => {
+        if (yPos > pageHeight - 40) {
+            doc.addPage();
+            yPos = 40;
+        }
+        doc.text(line, 50, yPos);
+        yPos += 18;
+    });
+    
+    return yPos + 10;
+}
+
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'pt', 'letter');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Set default styles
+    doc.setFont('helvetica');
+    doc.setFontSize(12);
+    let yPosition = 60;
+
+    // Add Centered Name
+    const name = document.getElementById('fullName').value || 'Your Name';
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text(name, pageWidth/2, yPosition, { align: 'center' });
+    yPosition += 30;
+
+    // Add Contact Information
+    const contactInfo = [
+        document.getElementById('email').value,
+        document.getElementById('phone').value,
+        document.getElementById('linkedin').value,
+        document.getElementById('portfolio').value
+    ].filter(Boolean).map(item => {
+        return item.startsWith('http') ? 'Portfolio' : item;
+    }).join(' | ');
+
+    if (contactInfo) {
+        doc.setFontSize(12);
+        doc.text(contactInfo, pageWidth/2, yPosition, { align: 'center' });
+        yPosition += 20;
+    }
+
+    // Add space before first section
+    yPosition += 10;
+    
+    // Define sections
+    const sections = [
+        { 
+            title: 'Professional Summary',
+            content: document.getElementById('summary').value,
+            condition: () => document.getElementById('summary').value.trim()
+        },
+        {
+            title: 'Work Experience',
+            content: getFormattedWorkExperience(),
+            condition: () => Array.from(document.querySelectorAll('#work-experience-container .entry'))
+                            .some(entry => entry.querySelector('.job-title').value.trim())
+        },
+        {
+            title: 'Education',
+            content: getFormattedEducation(),
+            condition: () => Array.from(document.querySelectorAll('#education-container .entry'))
+                            .some(entry => entry.querySelector('.degree').value.trim())
+        },
+        {
+            title: 'Skills',
+            content: getFormattedSkills(),
+            condition: () => Array.from(document.querySelectorAll('#skills-container .skill-input'))
+                            .some(input => input.value.trim())
+        },
+        {
+            title: 'Certifications',
+            content: getFormattedCertifications(),
+            condition: () => Array.from(document.querySelectorAll('#certifications-container .entry'))
+                            .some(entry => entry.querySelector('.cert-name').value.trim())
+        }
+    ];
+
+    // Filter active sections
+    const activeSections = sections.filter(section => section.condition());
+
+    // Add sections with dividers
+    activeSections.forEach((section, index) => {
+        yPosition = addSection(doc, yPosition, section.title, section.content);
+        
+        // Add divider if not last section
+        if (index < activeSections.length - 1) {
+            doc.setDrawColor(44, 62, 80);
+            doc.setLineWidth(0.3);
+            const margin = pageWidth * 0.1;
+            const dividerY = yPosition + 10;
+            doc.line(margin, dividerY, pageWidth - margin, dividerY);
+            yPosition = dividerY + 20;
+        }
+    });
+
+    doc.save('professional-resume.pdf');
+}
+
+    
+
+        </script>
+
+
+
+</body>
+
+</html>

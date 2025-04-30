@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Templates Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .template-card h1,
+.template-card h2 {
+    font-size: 1.8rem; /* bigger size for prominence */
+    font-weight: 700; /* bold and confident */
+    margin: 0.5rem 0 0.3rem;
+    color: #1f3a93; /* deep professional blue (optional) */
+    line-height: 1.2;
+    transition: color 0.3s ease;
+}
+
+.template-card p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.template-card a:hover h1,
+.template-card a:hover h2 {
+    color: #2980b9; /* subtle blue hover effect */
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f6fa;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 3.5rem;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .template-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .template-card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .template-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+.badge {
+        background: linear-gradient(135deg, #2980b9, #3498db); /* strong, balanced blues */
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 9999px; /* pill shape */
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-transform: uppercase;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+footer {
+  background-color: #ffffff; /* White background */
+  text-align: center;
+  color: #6b7280; /* Tailwind's gray-500 equivalent */
+  font-size: 0.875rem; /* Small text */
+  padding: 1rem 0; /* Vertical padding */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Soft inner shadow */
+  margin-top: auto;
+  font-family: 'Inter', sans-serif;
+}
+
+footer span {
+  font-weight: 700; /* Bold */
+  color: #2563eb;   /* Tailwind's blue-600 */
+}
+
+@media (max-width: 640px) {
+  footer {
+    font-size: 0.8rem;
+    padding: 0.75rem 0;
+  }
+}
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#f5f6fa]">
+        <nav class="bg-white p-4 shadow-md flex items-center justify-between">
+        <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+          AYLABS
+        </div>
+        <div class="space-x-6">
+            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
+        </div>
+      </nav><br>
+    <div class="container">
+        <h1 class="text-4xl font-bold text-center mb-6">Choose Your Resume Template</h1>
+        
+    <div class="template-grid">
+
+            <!-- Professional Template -->
+            <div class="template-card">
+                <div class="badge">Universal</div>
+                <a href="{{ url_for('Professional') }}" >
+                    <h2>Professional Resume</h2>
+                    <p>Standard format suitable for most industries and experience levels</p>
+                </a>
+            </div>
+
+
+            <!-- Technical Resume -->
+            <div class="template-card">
+                <div class="badge">Technical</div>
+                <a href="{{ url_for('Technical_resume') }}" >
+                    <h2>Technical Resume</h2>
+                    <p>Specialized format for developers, engineers, and IT professionals</p>
+                </a>
+            </div>
+
+            <!-- Student/Entry-Level Template -->
+            <div class="template-card">
+                <div class="badge">Starter</div>
+                <a href="{{ url_for('student') }}" >
+                    <h2>Student/Entry-Level</h2>
+                    <p>Perfect for recent graduates and those starting their career journey</p>
+                </a>
+            </div>
+
+	    
+            <!-- Executive Template -->
+            <div class="template-card">
+                <div class="badge">Professional</div>
+                <a href="{{ url_for('Executive') }}">
+                    <h2>Executive Resume</h2>
+                    <p>For C-suite professionals and senior leadership roles with emphasis on strategic achievements</p>
+                </a>
+            </div>
+
+            <!-- Creative Template -->
+
+        </div>
+    </div>
+    <footer class="bg-white text-center text-gray-500 text-sm py-4 shadow-inner mt-auto">
+        Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
+      </footer>
+</body>
+</html>
