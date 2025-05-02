@@ -14,7 +14,7 @@ CORS(app)
 # MySQL database connection
 def get_db_connection():
     return pymysql.connect(
-        host="localhost",
+        host="147.93.110.109",
         user="root",
         password="Money@2035",
         database="leads",
