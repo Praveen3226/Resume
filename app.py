@@ -156,6 +156,60 @@ def submit_resume():
     finally:
         if 'connection' in locals() and connection:
             connection.close()
+
+@app.route('/submit-tech', methods=['POST'])
+def submit_tech():
+    try:
+        data = request.get_json()
+
+        required_fields = ['fullName', 'email', 'phone', 'linkedin']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'status': 'error', 'message': f'Missing required field: {field}'}), 400
+
+        full_name = data['fullName']
+        email = data['email']
+        phone = data['phone']
+        linkedin = data['linkedin']
+        portfolio = data.get('portfolio', '')
+        summary = data.get('summary', '')
+        prog_langs = data.get('progLangs', '')
+        frameworks = data.get('frameworks', '')
+        tools = data.get('tools', '')
+
+        experience = json.dumps(data.get('experience', []))
+        education = json.dumps(data.get('education', []))
+        projects = json.dumps(data.get('projects', []))
+        certifications = json.dumps(data.get('certifications', []))
+
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT id FROM tech_profiles WHERE email = %s", (email,))
+            if cursor.fetchone():
+                return jsonify({'status': 'error', 'message': 'Profile already exists'}), 409
+
+            cursor.execute("""
+                INSERT INTO tech_profiles (
+                    full_name, email, phone, linkedin, portfolio,
+                    summary, prog_langs, frameworks, tools,
+                    experience, education, projects, certifications, created_at
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                full_name, email, phone, linkedin, portfolio,
+                summary, prog_langs, frameworks, tools,
+                experience, education, projects, certifications, datetime.now()
+            ))
+            conn.commit()
+
+        return jsonify({'status': 'success'}), 201
+
+    except Exception as e:
+        app.logger.error(f"Submit profile error: {e}")
+        return jsonify({'status': 'error', 'message': 'Server error'}), 500
+    finally:
+        if 'conn' in locals():
+            conn.close()
             
 if __name__ == "__main__":
     app.run(debug=True)
