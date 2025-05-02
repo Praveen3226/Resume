@@ -1,9 +1,9 @@
 from flask import Flask, render_template, jsonify, request, json
 from flask_cors import CORS
 import pymysql
-from datetime import datetime
+import datetime
 import os
-
+from datetime import datetime
 
 # Load environment variables
 
@@ -19,8 +19,15 @@ def get_db_connection():
         password="Money@2035",
         database="leads",
         cursorclass=pymysql.cursors.DictCursor
-    )
-    
+    )  
+
+# Load environment variables
+
+app = Flask(__name__)
+CORS(app)
+
+
+
 
 @app.route('/')
 def index():
@@ -156,7 +163,7 @@ def submit_resume():
     finally:
         if 'connection' in locals() and connection:
             connection.close()
-
+            
 @app.route('/submit-tech', methods=['POST'])
 def submit_tech():
     try:
@@ -210,6 +217,7 @@ def submit_tech():
     finally:
         if 'conn' in locals():
             conn.close()
-            
+
+
 if __name__ == "__main__":
     app.run(debug=True)
