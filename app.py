@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request, json
 from flask_cors import CORS
 import pymysql
-import datetime
+from datetime import datetime
 import os
 
 
