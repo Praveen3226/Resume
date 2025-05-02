@@ -314,8 +314,11 @@
                 <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
             </details>
 
-            <button   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="downloadPDF()">Download PDF</button>
-        </div>
+            <button 
+            onclick="submitAndDownload()" 
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md">
+            Submit & Download PDF
+        </button>        </div>
 
         <!-- Preview Section -->
         <div class="preview-section">
@@ -382,6 +385,72 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
+
+function collectFormData() {
+    return {
+        fullName: document.getElementById("fullName").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        linkedin: document.getElementById("linkedin").value,
+        portfolio: document.getElementById("portfolio").value,
+        summary: document.getElementById("summary").value,
+        progLangs: document.getElementById("prog-langs").value,
+        frameworks: document.getElementById("frameworks").value,
+        tools: document.getElementById("tools").value,
+        experience: Array.from(document.querySelectorAll('#work-experience-container .entry')).map(entry => ({
+            jobTitle: entry.querySelector('.job-title').value,
+            company: entry.querySelector('.company').value,
+            dates: entry.querySelector('.work-dates').value,
+            achievements: entry.querySelector('.achievements').value
+        })),
+        education: Array.from(document.querySelectorAll('#education-container .entry')).map(entry => ({
+            degree: entry.querySelector('.degree').value,
+            university: entry.querySelector('.university').value,
+            year: entry.querySelector('.grad-year').value
+        })),
+        projects: Array.from(document.querySelectorAll('#projects-container .entry')).map(entry => ({
+            name: entry.querySelector('.project-name').value,
+            description: entry.querySelector('.project-desc').value
+        })),
+        certifications: Array.from(document.querySelectorAll('#certifications-container .entry')).map(entry => ({
+            name: entry.querySelector('.cert-name').value,
+            organization: entry.querySelector('.cert-org').value,
+            year: entry.querySelector('.cert-year').value
+        }))
+    };
+}
+async function submitAndDownload() {
+    const data = collectFormData();
+
+    // Simple required field validation
+    const requiredFields = ['fullName', 'email', 'phone', 'linkedin'];
+    for (let field of requiredFields) {
+        if (!data[field]) {
+            alert(`Please fill out the ${field} field.`);
+            return;
+        }
+    }
+
+    try {
+        const response = await fetch('/submit-tech', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Profile submitted successfully! Downloading your resume PDF...");
+            await downloadPDF(); // Assuming you have this function defined
+        } else {
+            alert("Submission failed: " + (result.message || "Unknown error"));
+        }
+    } catch (err) {
+        console.error("Submission error:", err);
+        alert("An unexpected error occurred.");
+    }
+}
         // Section configuration
         const sections = [{
             id: 'contactSection',
