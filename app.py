@@ -3,7 +3,7 @@ from flask_cors import CORS
 import pymysql
 import datetime
 import os
-from datetime import datetime
+
 
 # Load environment variables
 
@@ -14,20 +14,13 @@ CORS(app)
 # MySQL database connection
 def get_db_connection():
     return pymysql.connect(
-        host="147.93.110.109",
+        host="localhost",
         user="root",
         password="Money@2035",
         database="leads",
         cursorclass=pymysql.cursors.DictCursor
-    )  
-
-# Load environment variables
-
-app = Flask(__name__)
-CORS(app)
-
-
-
+    )
+    
 
 @app.route('/')
 def index():
@@ -220,4 +213,4 @@ def submit_tech():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)
