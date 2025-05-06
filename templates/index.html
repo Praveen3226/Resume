@@ -130,17 +130,31 @@ footer span {
     padding: 0.75rem 0;
   }
 }
+@keyframes countUp {
+    0% { content: "3475"; }
+    100% { content: "3487"; }
+}
+
+#resume-count {
+    font-size: 2rem; /* Make it larger */
+    font-weight: bold;
+    color: #4CAF50; /* Add a nice green color */
+    animation: countUp 2s ease-in-out forwards;
+}
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-[#f5f6fa]">
-        <nav class="bg-white p-4 shadow-md flex items-center justify-between">
-        <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
-          AYLABS
-        </div>
-        <div class="space-x-6">
-            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
-        </div>
-      </nav><br>
+<nav class="bg-white p-4 shadow-md flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AYLABS Logo" class="h-16 w-16    object-contain">
+        <span class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+            AYLABS
+        </span>
+    </div>
+    <div class="space-x-6">
+        <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-300">Home</a>
+    </div>
+</nav><br>
     <div class="container">
         <h1 class="text-4xl font-bold text-center mb-6">Choose Your Resume Template</h1>
         
@@ -183,13 +197,88 @@ footer span {
                     <p>For C-suite professionals and senior leadership roles with emphasis on strategic achievements</p>
                 </a>
             </div>
-
+            
             <!-- Creative Template -->
 
+        </div>
+        <h1 class="text-center text-gray-600 text-md mb-8">
+            🎉 <strong id="resume-count">3475 +</strong> resumes downloaded so far!
+        </h1>
+        <div class="bg-white p-6 rounded-lg shadow-md mt-10">
+            <h3 class="text-2xl font-semibold text-center mb-4">What Users Say</h3>
+            <div id="testimonial-carousel" class="relative overflow-hidden">
+              <div class="transition duration-700 ease-in-out flex w-full" id="testimonial-slides">
+                <div class="min-w-full text-center">
+                  <p class="text-gray-600 italic">"Super intuitive and easy to use. Helped me land my first job!" – Praveen R</p>
+                </div>
+                <div class="min-w-full text-center">
+                  <p class="text-gray-600 italic">"Amazing templates! My resume looks 10x more professional now." – Arjun S</p>
+                </div>
+                <div class="min-w-full text-center">
+                  <p class="text-gray-600 italic">"Fast, clean, and very helpful for career starters." – Pravalika P</p>
+                </div>
+              </div>
+            </div>
+            <!-- Optional navigation dots -->
+            <div class="flex justify-center mt-4 space-x-2">
+              <span class="w-3 h-3 bg-blue-500 rounded-full" id="dot0"></span>
+              <span class="w-3 h-3 bg-gray-300 rounded-full" id="dot1"></span>
+              <span class="w-3 h-3 bg-gray-300 rounded-full" id="dot2"></span>
+            </div>
+          </div>
+        <div class="bg-blue-100 p-4 rounded-lg mt-6 text-center">
+            <h4 class="text-lg font-bold text-blue-800">Need Help Building Your Resume?</h4>
+            <p class="text-sm text-gray-700">Try our AI-assisted suggestions or contact our support team.</p>
         </div>
     </div>
     <footer class="bg-white text-center text-gray-500 text-sm py-4 shadow-inner mt-auto">
         Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
       </footer>
+      <script>
+
+let count = 0;
+const target = 3487; // Number without the plus sign
+const element = document.getElementById('resume-count');
+const duration = 1000; // animation duration in ms
+
+function animateCount() {
+    const stepTime = Math.abs(Math.floor(duration / (target / 100))); // Increase step size for faster animation
+    let currentCount = 0;
+
+    const interval = setInterval(() => {
+        currentCount += 100; // Increment by 100
+        if (currentCount > target) currentCount = target; // Avoid going over the target
+        element.textContent = `+${currentCount}`; // Add the plus sign before the number
+
+        if (currentCount === target) {
+            clearInterval(interval);
+        }
+    }, stepTime);
+}
+
+window.onload = animateCount;
+
+
+window.onload = animateCount;
+//Testimonials//
+const slides = document.getElementById('testimonial-slides');
+  const dots = [document.getElementById('dot0'), document.getElementById('dot1'), document.getElementById('dot2')];
+  let currentIndex = 0;
+
+  function showSlide(index) {
+    slides.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('bg-blue-500', i === index);
+      dot.classList.toggle('bg-gray-300', i !== index);
+    });
+  }
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % 3;
+    showSlide(currentIndex);
+  }, 4000); // Change slide every 4 seconds
+
+  showSlide(currentIndex); // Initialize
+      </script>
 </body>
 </html>
