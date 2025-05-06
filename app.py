@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request, json
 from flask_cors import CORS
 import pymysql
-import datetime
+from datetime import datetime
 import os
 
 
@@ -182,8 +182,8 @@ def submit_tech():
         projects = json.dumps(data.get('projects', []))
         certifications = json.dumps(data.get('certifications', []))
 
-        conn = get_db_connection()
-        with conn.cursor() as cursor:
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
             cursor.execute("SELECT id FROM tech_profiles WHERE email = %s", (email,))
             if cursor.fetchone():
                 return jsonify({'status': 'error', 'message': 'Profile already exists'}), 409
@@ -200,7 +200,7 @@ def submit_tech():
                 summary, prog_langs, frameworks, tools,
                 experience, education, projects, certifications, datetime.now()
             ))
-            conn.commit()
+            connection.commit()
 
         return jsonify({'status': 'success'}), 201
 
@@ -208,8 +208,8 @@ def submit_tech():
         app.logger.error(f"Submit profile error: {e}")
         return jsonify({'status': 'error', 'message': 'Server error'}), 500
     finally:
-        if 'conn' in locals():
-            conn.close()
+        if 'connection' in locals():
+            connection.close()
 
 
 if __name__ == "__main__":
