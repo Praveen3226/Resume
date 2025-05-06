@@ -194,6 +194,8 @@ button {
 
 <body>
     <nav class="bg-white p-4 shadow-md flex items-center justify-between">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AYLABS Logo" class="h-16 w-16    object-contain">
+
         <div class="text-2xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
           AYLABS
         </div>
@@ -327,8 +329,32 @@ button {
                 </div>
                 <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
             </details>
+            <div id="termsPopup" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+                <div style="background:white; padding:20px; max-width:500px; margin:auto; border-radius:10px; text-align:left; font-family:Arial, sans-serif;">
+                    <h2 style="text-align:center;">Terms & Conditions - AYLABS</h2>
+                    <p style="font-size:14px; line-height:1.6; color:#333;">
+                        Thank you for choosing <strong>AYLABS</strong>. Before proceeding, please carefully review the following terms:
+                    </p>
+                    <ul style="font-size:14px; line-height:1.8; color:#333; margin-top:15px;">
+                        <li>All information you submit will be securely transmitted and stored using industry-standard encryption methods.</li>
+                        <li><strong>AYLABS</strong> will use your provided data strictly for the intended purpose of generating your executive profile document.</li>
+                        <li>Collected data may be retained internally by <strong>AYLABS</strong> to improve, enhance, and personalize future products and services.</li>
+                        <li>Your personal information will <strong>never</strong> be sold, rented, disclosed, or shared with any third parties without your explicit consent.</li>
+                        <li><strong>AYLABS</strong> complies with global data protection laws, including GDPR, ensuring your privacy rights are respected at all times.</li>
+                        <li>All stored data is protected against unauthorized access, alteration, disclosure, or destruction through rigorous security measures.</li>
+                        <li>At any time, you may request to delete or review your stored data by contacting our Data Protection Officer (DPO) via our official channels.</li>
+                        <li>By accepting, you consent to the collection, secure processing, and limited use of your information in accordance with <strong>AYLABS</strong>'s Privacy Policy and Terms of Service.</li>
+                    </ul>
 
-            <button  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="downloadPDF()">Download PDF</button>
+                    <p style="margin-top:15px; font-size:13px; color:#555;">By clicking "Accept," you acknowledge and agree to these terms provided by <strong>AYLABS</strong>.</p>
+                    <div style="text-align:center; margin-top:20px;">
+                        <button onclick="acceptTerms()" style="margin-right:10px; padding:8px 16px;">Accept</button>
+                        <button onclick="declineTerms()" style="padding:8px 16px;">Decline</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300 ease-in-out" onclick="showTermsPopup()">Submit & Download PDF</button>
         </div>
 
         <!-- Preview Section -->
@@ -376,6 +402,81 @@ button {
         Done with ❤️ by <span class="font-bold text-blue-600">AYLABS</span>
       </footer>
 <script>
+    
+    function showTermsPopup() {
+    document.getElementById('termsPopup').style.display = 'flex';
+}
+
+function acceptTerms() {
+    document.getElementById('termsPopup').style.display = 'none';
+    submitStudentAndDownload(); // Correct function for student resume
+}
+
+function declineTerms() {
+    document.getElementById('termsPopup').style.display = 'none';
+    alert("You must accept the terms to proceed.");
+}
+function collectStudentFormData() {
+    const educationEntries = [...document.querySelectorAll('#education-container .entry')].map(entry => ({
+        degree: entry.querySelector('.degree').value,
+        university: entry.querySelector('.university').value,
+        gradYear: entry.querySelector('.grad-year').value,
+        coursework: entry.querySelector('.coursework').value,
+        achievements: entry.querySelector('.achievements').value
+    }));
+
+    const experienceEntries = [...document.querySelectorAll('#experience-container .entry')].map(entry => ({
+        position: entry.querySelector('.position').value,
+        organization: entry.querySelector('.organization').value,
+        dates: entry.querySelector('.dates').value,
+        responsibilities: entry.querySelector('.responsibilities').value
+    }));
+
+    const certifications = [...document.querySelectorAll('#certifications-container .entry')].map(entry => ({
+        name: entry.querySelector('.cert-name').value,
+        issuer: entry.querySelector('.issuer').value,
+        year: entry.querySelector('.year').value
+    }));
+
+    return {
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        linkedin: document.getElementById('linkedin').value,
+        objective: document.getElementById('objective').value,
+        education: educationEntries,
+        experience: experienceEntries,
+        technicalSkills: document.getElementById('technicalSkills').value.split(',').map(s => s.trim()),
+        softSkills: document.getElementById('softSkills').value.split(',').map(s => s.trim()),
+        certifications: certifications
+    };
+}
+
+async function submitStudentAndDownload() {
+    const data = collectStudentFormData();
+
+    try {
+        const response = await fetch('/submit-student-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const res = await response.json();
+
+        if (response.ok) {
+            alert("Student profile submitted successfully! Now downloading PDF...");
+            await downloadPDF();  // Assumes same logic as other profiles
+        } else {
+            console.error(res.message || "Unknown error");
+            alert("Submission failed: " + (res.message || "Unknown error"));
+        }
+    } catch (err) {
+        console.error(err);
+        alert("An error occurred during submission.");
+    }
+}
+
 const sections = [
     {
         id: 'contactSection',
