@@ -210,7 +210,59 @@ def submit_tech():
     finally:
         if 'connection' in locals():
             connection.close()
+            
+@app.route('/submit-student-profile', methods=['POST'])
+def submit_student_profile():
+    connection = None
+    try:
+        data = request.get_json()
 
+        # Basic input validation
+        required_fields = ['fullName', 'email', 'phone', 'linkedin', 'objective']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'status': 'error', 'message': f'Missing required field: {field}'}), 422
+
+        full_name = data['fullName']
+        email = data['email']
+        phone = data['phone']
+        linkedin = data['linkedin']
+        objective = data['objective']
+        education = json.dumps(data.get('education', []))
+        experience = json.dumps(data.get('experience', []))
+        technical_skills = json.dumps(data.get('technicalSkills', []))
+        soft_skills = json.dumps(data.get('softSkills', []))
+        certifications = json.dumps(data.get('certifications', []))
+
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM student_profiles WHERE email = %s", (email,))
+            if cursor.fetchone():
+                return jsonify({'status': 'error', 'message': 'Profile with this email already exists.'}), 409
+
+            sql = """
+                INSERT INTO student_profiles (
+                    full_name, email, phone, linkedin, objective,
+                    education, experience, technical_skills,
+                    soft_skills, certifications, created_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+            """
+            cursor.execute(sql, (
+                full_name, email, phone, linkedin, objective,
+                education, experience, technical_skills,
+                soft_skills, certifications
+            ))
+            connection.commit()
+
+        return jsonify({'status': 'success'}), 201
+
+    except Exception as e:
+        app.logger.error(f"Error inserting student profile: {e}")
+        return jsonify({'status': 'error', 'message': 'Server error. Please try again later.'}), 500
+
+    finally:
+        if connection:
+            connection.close()
 
 if __name__ == "__main__":
     app.run(debug=True)
