@@ -1,15 +1,17 @@
-from flask import Flask, render_template, jsonify, request, json
+from flask import Flask, render_template, jsonify, request, json ,session, flash , redirect, url_for
 from flask_cors import CORS
 import pymysql
 from datetime import datetime
 import os
-
+from datetime import timedelta
 
 # Load environment variables
 
 app = Flask(__name__)
 CORS(app)
 
+app.secret_key = 'supersecretkey'  # Use a stronger secret key in production
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 # MySQL database connection
 def get_db_connection():
@@ -210,7 +212,8 @@ def submit_tech():
     finally:
         if 'connection' in locals():
             connection.close()
-            
+
+
 @app.route('/submit-student-profile', methods=['POST'])
 def submit_student_profile():
     connection = None
@@ -263,6 +266,82 @@ def submit_student_profile():
     finally:
         if connection:
             connection.close()
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        if username == 'ADMINAYLABSPR' and password == 'AYLABSPR':
+            session['admin'] = True
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('dashboard_wp'))
+        else:
+            flash('Invalid credentials.', 'danger')
+            return redirect(url_for('admin_login'))
+
+    return render_template('admin_login.html')
+
+@app.route('/dashboard_wp', methods=['GET'])
+def dashboard_wp():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+
+    connection = None
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Fetch all profiles
+        cursor.execute("SELECT * FROM executive_profiles")
+        executive_profiles = cursor.fetchall()
+
+        # Fetch counts for executive profiles
+        cursor.execute("SELECT COUNT(*) FROM executive_profiles")
+        executive_profiles_count = cursor.fetchone()['COUNT(*)']
+
+        cursor.execute("SELECT * FROM resumes")
+        resumes = cursor.fetchall()
+
+        # Fetch counts for resumes
+        cursor.execute("SELECT COUNT(*) FROM resumes")
+        resumes_count = cursor.fetchone()['COUNT(*)']
+
+        cursor.execute("SELECT * FROM tech_profiles")
+        tech_profiles = cursor.fetchall()
+
+        # Fetch counts for tech profiles
+        cursor.execute("SELECT COUNT(*) FROM tech_profiles")
+        tech_profiles_count = cursor.fetchone()['COUNT(*)']
+
+        cursor.execute("SELECT * FROM student_profiles")
+        student_profiles = cursor.fetchall()
+
+        # Fetch counts for student profiles
+        cursor.execute("SELECT COUNT(*) FROM student_profiles")
+        student_profiles_count = cursor.fetchone()['COUNT(*)']
+
+        return render_template(
+            'dashboard_wp.html',
+            executive_profiles=executive_profiles,
+            executive_profiles_count=executive_profiles_count,
+            resumes=resumes,
+            resumes_count=resumes_count,
+            tech_profiles=tech_profiles,
+            tech_profiles_count=tech_profiles_count,
+            student_profiles=student_profiles,
+            student_profiles_count=student_profiles_count
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error fetching data for dashboard: {e}")
+        return jsonify({'status': 'error', 'message': 'Server error'}), 500
+
+    finally:
+        if connection:
+            connection.close()
+            
 
 if __name__ == "__main__":
     app.run(debug=True)
