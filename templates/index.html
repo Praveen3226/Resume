@@ -161,42 +161,41 @@ footer span {
     <div class="template-grid">
 
             <!-- Professional Template -->
-            <div class="template-card">
-                <div class="badge">Universal</div>
-                <a href="{{ url_for('Professional') }}" >
-                    <h2>Professional Resume</h2>
-                    <p>Standard format suitable for most industries and experience levels</p>
-                </a>
-            </div>
+         <!-- Professional Resume -->
+<div class="template-card">
+    <a href="{{ url_for('Professional') }}">
+        <div class="badge">Universal</div>
+        <h2>Professional Resume</h2>
+        <p>Standard format suitable for most industries and experience levels</p>
+    </a>
+</div>
 
+<!-- Technical Resume -->
+<div class="template-card">
+    <a href="{{ url_for('Technical_resume') }}">
+        <div class="badge">Technical</div>
+        <h2>Technical Resume</h2>
+        <p>Specialized format for developers, engineers, and IT professionals</p>
+    </a>
+</div>
 
-            <!-- Technical Resume -->
-            <div class="template-card">
-                <div class="badge">Technical</div>
-                <a href="{{ url_for('Technical_resume') }}" >
-                    <h2>Technical Resume</h2>
-                    <p>Specialized format for developers, engineers, and IT professionals</p>
-                </a>
-            </div>
+<!-- Student/Entry-Level Template -->
+<div class="template-card">
+    <a href="{{ url_for('student') }}">
+        <div class="badge">Starter</div>
+        <h2>Student/Entry-Level</h2>
+        <p>Perfect for recent graduates and those starting their career journey</p>
+    </a>
+</div>
 
-            <!-- Student/Entry-Level Template -->
-            <div class="template-card">
-                <div class="badge">Starter</div>
-                <a href="{{ url_for('student') }}" >
-                    <h2>Student/Entry-Level</h2>
-                    <p>Perfect for recent graduates and those starting their career journey</p>
-                </a>
-            </div>
-
-	    
-            <!-- Executive Template -->
-            <div class="template-card">
-                <div class="badge">Professional</div>
-                <a href="{{ url_for('Executive') }}">
-                    <h2>Executive Resume</h2>
-                    <p>For C-suite professionals and senior leadership roles with emphasis on strategic achievements</p>
-                </a>
-            </div>
+<!-- Executive Template -->
+<div class="template-card">
+    <a href="{{ url_for('Executive') }}">
+        <div class="badge">Professional</div>
+        <h2>Executive Resume</h2>
+        <p>For C-suite professionals and senior leadership roles with emphasis on strategic achievements</p>
+    </a>
+</div>
             
             <!-- Creative Template -->
 
