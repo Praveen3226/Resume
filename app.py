@@ -291,6 +291,11 @@ def admin_login():
 
     return render_template('admin_login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('admin', None)  # Removes the admin session
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('index'))  # Redirect to login page
 
 @app.route('/dashboard_wp')
 @login_required
