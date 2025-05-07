@@ -4,13 +4,14 @@ import pymysql
 from datetime import datetime
 import os
 from datetime import timedelta
+from functools import wraps
 
 # Load environment variables
 
 app = Flask(__name__)
 CORS(app)
 
-app.secret_key = 'supersecretkey'  # Use a stronger secret key in production
+app.secret_key = 'your-very-secret-key' # Use a stronger secret key in production
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 # MySQL database connection
@@ -23,6 +24,13 @@ def get_db_connection():
         cursorclass=pymysql.cursors.DictCursor
     )
     
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route('/')
 def index():
@@ -283,10 +291,11 @@ def admin_login():
 
     return render_template('admin_login.html')
 
-@app.route('/dashboard_wp', methods=['GET'])
+
+@app.route('/dashboard_wp')
+@login_required
 def dashboard_wp():
-    if not session.get('admin'):
-        return redirect(url_for('admin_login'))
+
 
     connection = None
     try:
