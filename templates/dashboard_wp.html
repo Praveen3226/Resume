@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        h2 { margin-top: 40px; }
+    .card {
+        width: 18rem;
+        margin: 1rem;
+        display: inline-block;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background-color: #f4f4f4;
+        font-size: 1.25rem;
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        color: #333;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+    </style>
+</head>
+<body>
+    <h1>User Profiles Dashboard</h1>
+    <div style="text-align: right; margin-bottom: 20px;">
+        <a href="{{ url_for('index') }}" class="btn btn-danger">Logout</a>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            Executive Profiles
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Total Records: {{ executive_profiles_count }}</h5>
+        </div>
+    </div>
+    
+    <!-- Professional Resumes Card -->
+    <div class="card">
+        <div class="card-header">
+            Professional Resumes
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Total Records: {{ resumes_count }}</h5>
+        </div>
+    </div>
+    
+    <!-- Technical Profiles Card -->
+    <div class="card">
+        <div class="card-header">
+            Technical Profiles
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Total Records: {{ tech_profiles_count }}</h5>
+        </div>
+    </div>
+    
+    <!-- Student Profiles Card -->
+    <div class="card">
+        <div class="card-header">
+            Student Profiles
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Total Records: {{ student_profiles_count }}</h5>
+        </div>
+    </div>
+
+    <!-- Executive Profiles -->
+    <h2>Executive Profiles</h2>
+    <button onclick="exportToExcel()" class="btn-primary export-btn">Export to Excel</button>
+    <table id="execTable">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>LinkedIn</th>
+            <th>Summary</th>
+            <th>Competencies</th>
+            <th>Experience</th>
+            <th>Education</th>
+        </tr>
+        {% for profile in executive_profiles %}
+        <tr>
+            <td>{{ profile.full_name }}</td>
+            <td>{{ profile.email }}</td>
+            <td>{{ profile.phone }}</td>
+            <td>{{ profile.linkedin }}</td>
+            <td>{{ profile.executive_summary }}</td>
+            <td>{{ profile.competencies }}</td>
+            <td>{{ profile.experience }}</td>
+            <td>{{ profile.education }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <!-- Professional Resumes -->
+    <h2>Professional Resumes</h2>
+    <button onclick="exportTableToExcel('proTable', 'Professional_Resumes.xlsx')" class="btn-primary export-btn">Export to Excel</button>
+    <table id="proTable">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>LinkedIn</th>
+            <th>Portfolio</th>
+            <th>Summary</th>
+            <th>Experience</th>
+            <th>Education</th>
+            <th>Skills</th>
+            <th>Certifications</th>
+        </tr>
+        {% for resume in resumes %}
+        <tr>
+            <td>{{ resume.full_name }}</td>
+            <td>{{ resume.email }}</td>
+            <td>{{ resume.phone }}</td>
+            <td>{{ resume.linkedin }}</td>
+            <td>{{ resume.portfolio }}</td>
+            <td>{{ resume.summary }}</td>
+            <td>{{ resume.work_experience }}</td>
+            <td>{{ resume.education }}</td>
+            <td>{{ resume.skills }}</td>
+            <td>{{ resume.certifications }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Technical Profiles -->
+    <h2>Technical Profiles</h2>
+
+    <button onclick="exportTableToExcel('techTable', 'Technical_Profiles.xlsx')" class="btn-primary export-btn">Export to Excel</button>
+    <table id="techTable">        
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>LinkedIn</th>
+            <th>Portfolio</th>
+            <th>Summary</th>
+            <th>Languages</th>
+            <th>Frameworks</th>
+            <th>Tools</th>
+            <th>Experience</th>
+            <th>Education</th>
+            <th>Projects</th>
+            <th>Certifications</th>
+        </tr>
+        {% for tech in tech_profiles %}
+        <tr>
+            <td>{{ tech.full_name }}</td>
+            <td>{{ tech.email }}</td>
+            <td>{{ tech.phone }}</td>
+            <td>{{ tech.linkedin }}</td>
+            <td>{{ tech.portfolio }}</td>
+            <td>{{ tech.summary }}</td>
+            <td>{{ tech.prog_langs }}</td>
+            <td>{{ tech.frameworks }}</td>
+            <td>{{ tech.tools }}</td>
+            <td>{{ tech.experience }}</td>
+            <td>{{ tech.education }}</td>
+            <td>{{ tech.projects }}</td>
+            <td>{{ tech.certifications }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- Student Profiles -->
+    <h2>Student Profiles</h2>
+
+    <button onclick="exportTableToExcel('studentTable', 'Student_Profiles.xlsx')" class="btn-primary export-btn">Export to Excel</button>
+    <table id="studentTable">
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>LinkedIn</th>
+            <th>Objective</th>
+            <th>Education</th>
+            <th>Experience</th>
+            <th>Technical Skills</th>
+            <th>Soft Skills</th>
+            <th>Certifications</th>
+        </tr>
+        {% for student in student_profiles %}
+        <tr>
+            <td>{{ student.full_name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone }}</td>
+            <td>{{ student.linkedin }}</td>
+            <td>{{ student.objective }}</td>
+            <td>{{ student.education }}</td>
+            <td>{{ student.experience }}</td>
+            <td>{{ student.technical_skills }}</td>
+            <td>{{ student.soft_skills }}</td>
+            <td>{{ student.certifications }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        function exportTableToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+            XLSX.writeFile(workbook, filename);
+        }
+    </script>
+</body>
+</html>
